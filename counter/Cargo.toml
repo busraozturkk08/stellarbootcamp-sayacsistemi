@@ -1,0 +1,29 @@
+ [package]
+ name = "counter"
+ version = "0.1.0"
+ edition = "2021"
+ license = "Apache-2.0"
+ authors = ["Stellar Bootcamp"]
+ description = "A simple Soroban counter contract (global counter)"
+
+ [lib]
+ crate-type = ["cdylib", "rlib"]
+ name = "counter"
+
+ [dependencies]
+ soroban-sdk = "23.0.0"
+
+ [dev-dependencies]
+ soroban-sdk = { version = "23.0.0", features = ["testutils"] }
+
+ [profile.release]
+ # Optimize for smaller wasm
+ panic = "abort"
+ opt-level = "z"
+ codegen-units = 1
+ lto = true
+ strip = true
+
+
+
+

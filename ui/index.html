@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter - Soroban Sayaç</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔢 Soroban Sayaç</h1>
+            <p class="subtitle">Akıllı sözleşme ile çalışan global sayaç</p>
+            
+            <div class="counter-display">
+                <div class="counter-value" id="counterValue">0</div>
+                <div class="counter-label">Mevcut Değer</div>
+            </div>
+
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span>Bağlantı kuruluyor...</span>
+            </div>
+
+            <div class="contract-input-section">
+                <label for="contractId">Contract ID:</label>
+                <input 
+                    type="text" 
+                    id="contractId" 
+                    placeholder="Contract ID'yi buraya girin..."
+                    value=""
+                >
+                <button id="connectBtn" class="btn btn-primary">Bağlan</button>
+            </div>
+
+            <div class="actions">
+                <button id="incrementBtn" class="btn btn-success" disabled>
+                    ➕ Artır
+                </button>
+                <button id="getCountBtn" class="btn btn-info" disabled>
+                    🔍 Değeri Oku
+                </button>
+                <button id="resetBtn" class="btn btn-danger" disabled>
+                    🔄 Sıfırla
+                </button>
+            </div>
+
+            <div class="messages" id="messages"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk@latest/dist/stellar-sdk.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stellar/stellar-soroban-rpc@latest/dist/soroban-rpc.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+
+
+
+

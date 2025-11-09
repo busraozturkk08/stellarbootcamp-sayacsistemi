@@ -16,6 +16,180 @@ A fully decentralized counter system built on **Stellar Soroban** blockchain. St
 
 🛡️ **Secure**: Immutable smart contracts ensure data integrity
 
+## 🚀 Deployment Guide
+
+### Contract IDs
+
+| Contract | Contract ID | Status |
+|----------|-------------|--------|
+| Counter | `CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3` | ✅ Deployed & Ready |
+
+**Explorer links:**
+
+- Counter Contract: [https://stellar.expert/explorer/testnet/contract/CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3](https://stellar.expert/explorer/testnet/contract/CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3)
+
+### Environment Variables
+
+Frontend uses the contract ID directly in `ui/app.js`. Update the following:
+
+```javascript
+const CONTRACT_ID = "CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3";
+const RPC_URL = "https://soroban-testnet.stellar.org";
+const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
+```
+
+After updating, restart the frontend server:
+
+```bash
+cd ui
+python -m http.server 8000
+# or
+npx http-server -p 8000
+```
+
+## 📦 Deployment Steps
+
+1. **Build contracts**: 
+   ```bash
+   cd counter
+   stellar contract build
+   ```
+
+2. **Run tests**:
+   ```bash
+   cargo test
+   ```
+
+3. **Deploy contract using Stellar CLI** (see below)
+
+4. **Update frontend with contract ID**:
+   - Edit `ui/app.js` and update `CONTRACT_ID` with: `CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3`
+
+5. **Start frontend**:
+   ```bash
+   cd ui
+   python -m http.server 8000
+   ```
+
+## Example CLI Commands
+
+### Deploy Counter Contract:
+
+**Testnet:**
+
+```bash
+cd counter
+
+stellar contract deploy \
+  --wasm target\wasm32v1-none\release\counter.wasm \
+  --source counter_deployer \
+  --network testnet \
+  --alias counter_contract
+```
+
+**With Stellar Laboratory (signing):**
+
+```bash
+stellar contract deploy \
+  --wasm target\wasm32v1-none\release\counter.wasm \
+  --source temp \
+  --network testnet \
+  --sign-with-lab
+```
+
+**Local:**
+
+```bash
+stellar contract deploy \
+  --wasm target\wasm32v1-none\release\counter.wasm \
+  --source counter_deployer \
+  --local
+```
+
+### Initialize Counter:
+
+The counter contract doesn't require initialization. It starts at 0 when deployed.
+
+### Example Contract Invocations:
+
+**Get current count:**
+
+```bash
+stellar contract invoke \
+  --id CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3 \
+  --source counter_deployer \
+  --network testnet \
+  -- get_count
+```
+
+**Increment counter:**
+
+```bash
+stellar contract invoke \
+  --id CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3 \
+  --source counter_deployer \
+  --network testnet \
+  -- increment
+```
+
+**Reset counter:**
+
+```bash
+stellar contract invoke \
+  --id CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3 \
+  --source counter_deployer \
+  --network testnet \
+  -- reset
+```
+
+## 🛠️ Troubleshooting
+
+- **Make sure you have enough XLM in your account** for transaction fees
+- **Check that WASM files were built successfully**: Verify `counter/target/wasm32v1-none/release/counter.wasm` exists
+- **Verify network connection to testnet**: Test with `stellar contract invoke` command
+- **Check contract IDs**: Ensure contract ID is correct in frontend (`CCHQPJXITLWAD7IBLPYMZCIEWXVMGOOSNH7LLJOPCJE64TPUF6APIUO3`)
+- **Restart frontend after updating contract ID**: Clear browser cache if needed
+- **Contract calls failing**: Verify you're connected to the correct network (testnet/mainnet/local)
+
+## 📊 Contract Functions
+
+| Function | Description | Parameters |
+|----------|-------------|------------|
+| `get_count` | Get current counter value | - |
+| `increment` | Increment counter by 1 | - |
+| `reset` | Reset counter to zero | - |
+
+## 🔐 Security Features
+
+- ✅ Persistent on-chain storage
+- ✅ Immutable contract code
+- ✅ Permissionless operations
+- ✅ Transparent transactions
+- ✅ No admin controls (fully decentralized)
+
+## 📈 Build Information
+
+- **Wasm Hash**: `b189ab9754a58f686d9fa952a95f4aff8f60d96da59205831fa3616e7e458a70`
+- **Wasm Size**: 1.2 KB
+- **Exported Functions**: 3
+- **Test Coverage**: 1/1 tests passed
+- **Soroban SDK**: 23.1.0
+
+## 🧪 Testing
+
+Run tests:
+
+```bash
+cd counter
+cargo test
+```
+
+**Test Results:**
+
+- ✅ 1/1 tests passed
+- ✅ Counter flow test included
+- ✅ Storage persistence verified
+
 ## 🏗️ Architecture
 
 ### Smart Contract (`counter/`)
@@ -28,106 +202,9 @@ Written in Rust using Soroban SDK, the contract provides:
 - **Reset**: Reset counter to zero
 - **Persistent Storage**: Data stored on-chain using instance storage
 
-**Key Functions:**
-
-- `increment()` - Increment counter by 1 and return new value
-- `get_count()` - Get current counter value
-- `reset()` - Reset counter to zero
-
 ### Frontend (`ui/`)
 
 Modern web interface built with HTML, CSS, and JavaScript for interacting with the contract.
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Rust** (1.70 or higher)
-  ```bash
-  # Install Rust
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-  # Windows: Download from https://rustup.rs/
-  ```
-
-- **Stellar CLI**
-  ```bash
-  # Install via npm
-  npm install -g @stellar/cli
-  
-  # Or via cargo
-  cargo install stellar-cli
-  ```
-
-- **Node.js** (18+)
-  ```bash
-  # Check Node.js version
-  node --version
-  ```
-
-### Building the Smart Contract
-
-1. **Navigate to contract directory:**
-   ```bash
-   cd counter
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   cargo build
-   ```
-
-3. **Run tests:**
-   ```bash
-   cargo test
-   ```
-
-4. **Build WASM file:**
-   ```bash
-   stellar contract build
-   ```
-
-   The WASM file will be created at:
-   ```
-   target/wasm32v1-none/release/counter.wasm
-   ```
-
-5. **Verify build:**
-   ```bash
-   # Check if WASM file exists
-   ls -lh target/wasm32v1-none/release/counter.wasm
-   ```
-
-### Running the Frontend
-
-1. **Navigate to UI directory:**
-   ```bash
-   cd ui
-   ```
-
-2. **Start a local server:**
-
-   **Option 1: Using Python**
-   ```bash
-   python -m http.server 8000
-   ```
-
-   **Option 2: Using Node.js**
-   ```bash
-   npx http-server -p 8000
-   ```
-
-   **Option 3: Using PHP**
-   ```bash
-   php -S localhost:8000
-   ```
-
-3. **Open in browser:**
-   Visit `http://localhost:8000` to see the application.
-
-4. **Update contract ID:**
-   Before using the frontend, make sure to update the contract ID in `ui/app.js` with your deployed contract ID.
 
 ## 📖 How It Works
 
@@ -147,24 +224,6 @@ Before you begin, ensure you have the following installed:
    - Anyone can call `reset()` to set counter back to 0
    - Useful for testing or starting fresh
 
-## 🧪 Testing
-
-All smart contract functions are thoroughly tested:
-
-```bash
-cd counter
-cargo test
-```
-
-Test coverage includes:
-
-- ✅ Contract initialization
-- ✅ Counter increment
-- ✅ Counter reading
-- ✅ Counter reset
-- ✅ Storage persistence
-- ✅ Multiple operations
-
 ## 📦 Project Structure
 
 ```
@@ -182,232 +241,26 @@ stellarbootcamp-sayacsistemi/
 └── README.md
 ```
 
-## 🔐 Security
-
-- All data stored in smart contract instance storage
-- Immutable contract code ensures data integrity
-- Anyone can read counter value (public)
-- Anyone can increment or reset (permissionless)
-- All operations are on-chain and transparent
-
-## 🌐 Deployment
-
-### Step 1: Prepare for Deployment
-
-1. **Build the contract:**
-   ```bash
-   cd counter
-   stellar contract build
-   ```
-
-2. **Verify WASM file exists:**
-   ```bash
-   ls -lh target/wasm32v1-none/release/counter.wasm
-   ```
-
-### Step 2: Set Up Stellar Account
-
-1. **Generate a keypair (if you don't have one):**
-   ```bash
-   # Create a new keypair with alias (replace 'alice' with your preferred alias name)
-   stellar keys generate --global alice --network testnet
-   
-   # Example output: You'll see a secret key and public key
-   # Save your secret key securely!
-   ```
-
-2. **Fund your account:**
-   ```bash
-   # Fund the account using Stellar CLI
-   stellar keys fund alice --network testnet
-   
-   # OR use the friendbot directly:
-   curl "https://friendbot.stellar.org/?addr=$(stellar keys address alice)"
-   ```
-
-3. **Verify your account balance:**
-   ```bash
-   stellar keys balance alice --network testnet
-   ```
-
-### Step 3: Deploy to Testnet
-
-1. **Deploy the contract:**
-   ```bash
-   # Replace 'alice' with your keypair alias from Step 2
-   stellar contract deploy \
-     --wasm target/wasm32v1-none/release/counter.wasm \
-     --source alice \
-     --network testnet \
-     --alias counter_contract
-   ```
-   
-   **Note:** The `--source` parameter should be the alias name you used when generating your keypair (e.g., `alice`, `mykey`, etc.)
-
-2. **Get the contract ID:**
-   ```bash
-   stellar contract id counter_contract
-   ```
-
-3. **Save the contract ID:**
-   Copy the contract ID that is displayed. You'll need it for frontend configuration.
-
-### Step 4: Update Frontend Configuration
-
-1. **Update contract ID in frontend:**
-   ```bash
-   cd ../ui
-   # Edit app.js and update CONTRACT_ID with your deployed contract ID
-   ```
-
-2. **Update the contract ID in `ui/app.js`:**
-   ```javascript
-   const CONTRACT_ID = "YOUR_CONTRACT_ID_HERE";
-   ```
-
-3. **Update RPC endpoint (if needed):**
-   ```javascript
-   const RPC_URL = "https://soroban-testnet.stellar.org";
-   ```
-
-### Step 5: Test the Deployment
-
-1. **Get current count:**
-   ```bash
-   # Replace 'alice' with your keypair alias
-   stellar contract invoke \
-     --id counter_contract \
-     --source alice \
-     --network testnet \
-     -- get_count
-   ```
-
-2. **Increment counter:**
-   ```bash
-   # Replace 'alice' with your keypair alias
-   stellar contract invoke \
-     --id counter_contract \
-     --source alice \
-     --network testnet \
-     -- increment
-   ```
-
-3. **Verify increment:**
-   ```bash
-   # Replace 'alice' with your keypair alias
-   stellar contract invoke \
-     --id counter_contract \
-     --source alice \
-     --network testnet \
-     -- get_count
-   ```
-
-4. **Reset counter (optional):**
-   ```bash
-   # Replace 'alice' with your keypair alias
-   stellar contract invoke \
-     --id counter_contract \
-     --source alice \
-     --network testnet \
-     -- reset
-   ```
-   
-   **Important:** Replace `alice` in all commands with the alias name you used when generating your keypair in Step 2.
-
-### Step 6: Deploy Frontend (Optional)
-
-You can deploy the frontend to various hosting platforms:
-
-**GitHub Pages:**
-```bash
-# Push ui folder to gh-pages branch
-git subtree push --prefix ui origin gh-pages
-```
-
-**Vercel:**
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-cd ui
-vercel
-```
-
-**Netlify:**
-```bash
-# Install Netlify CLI
-npm install -g netlify-cli
-
-# Deploy
-cd ui
-netlify deploy --prod
-```
-
-### Contract Invocation Examples
-
-**Important:** Replace `alice` with your own keypair alias in all commands below.
-
-**Get current count:**
-```bash
-stellar contract invoke \
-  --id counter_contract \
-  --source alice \
-  --network testnet \
-  -- get_count
-```
-
-**Increment counter:**
-```bash
-stellar contract invoke \
-  --id counter_contract \
-  --source alice \
-  --network testnet \
-  -- increment
-```
-
-**Reset counter:**
-```bash
-stellar contract invoke \
-  --id counter_contract \
-  --source alice \
-  --network testnet \
-  -- reset
-```
-
-**Note:** 
-- `alice` is an example alias name - use the alias you created when generating your keypair
-- `counter_contract` is the alias we used when deploying - you can also use the contract ID directly
-
-### Troubleshooting
-
-**Build errors:**
-- Make sure Rust is up to date: `rustup update`
-- Clean and rebuild: `cargo clean && cargo build`
-
-**Deployment errors:**
-- Check account balance: `stellar keys balance <your_alias> --network testnet` (replace `<your_alias>` with your keypair alias)
-- Verify network: `stellar config --network testnet`
-- Make sure you have sufficient XLM for deployment (minimum 1 XLM recommended)
-
-**Contract invocation errors:**
-- Verify contract ID is correct
-- Check account has sufficient XLM for fees
-- Ensure contract is deployed to the correct network
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
+## 📝 License
 
 Apache-2.0 License - feel free to use this for your own projects!
 
-## 🙏 Acknowledgments
+## 🤝 Contributing
 
-- Stellar Development Foundation for Soroban
-- Soroban Examples Repository
-- Community contributors
+Contributions welcome!
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 🔗 Useful Links
+
+- [Soroban Documentation](https://soroban.stellar.org)
+- [Stellar Network](https://stellar.org)
+- [Smart Contract Basics](https://soroban.stellar.org/docs/basic-tutorials/hello-world)
+- [Stellar Expert Explorer](https://stellar.expert/explorer/testnet)
 
 ---
 
